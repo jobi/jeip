@@ -66,7 +66,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			textarea_form		: '<textarea cols="#{cols}" rows="#{rows}" id="edit-#{id}" class="#{editfield_class}">#{value}</textarea> <br />',
 			start_select_form	: '<select id="edit-#{id}" class="#{editfield_clas}">',
 			select_option_form	: '<option id="edit-option-#{id}-#{option_value}" value="#{option_value}" #{selected}>#{option_text}</option>',
-			stop_select_form	: '</select> <br />',
+			stop_select_form	: '</select>',
 
 			after_save			: function( self ) {
 				for( var i = 0; i < 2; i++ ) {
