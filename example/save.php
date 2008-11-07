@@ -10,7 +10,7 @@ $orig_value	= $_POST['orig_value'];
 $new_value	= $_POST['new_value'];
 
 if( $form_type == 'select' ) {
-	$orig_option_text	= $_POST['old_option_text'];
+	$orig_option_text	= $_POST['orig_option_text'];
 	$new_option_text	= $_POST['new_option_text'];
 
 	$new_value			= $new_option_text;
