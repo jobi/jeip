@@ -32,7 +32,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			save_on_enter		: true,
 			cancel_on_esc		: true,
 			focus_edit			: true,
-			select_text			: false, // broken in webkit/safari?
+			select_text			: false,
 			edit_event			: "click",
 			select_options		: false,
 			data				: false,
@@ -182,6 +182,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 					if( opt.focus_edit ) {
 						$( "#edit-" + id ).focus( );
+					}
+
+					if( opt.select_text ) {
+						$( "#edit-" + id ).select( );
 					}
 
 					$( "#cancel-" + id ).bind( "click", function( e ) {
