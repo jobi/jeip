@@ -179,7 +179,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 					$( this ).after( form );
 					$( "#editor-" + id ).fadeIn( "fast" );
-					$( "#edit-" + id ).focus( );
+
+					if( opt.focus_edit ) {
+						$( "#edit-" + id ).focus( );
+					}
 
 					$( "#cancel-" + id ).bind( "click", function( e ) {
 						_cancelEdit( self );
