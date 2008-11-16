@@ -91,129 +91,133 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			} );
 
 			$( this ).bind( opt.edit_event, function( e ) {
-				$( this ).removeClass( opt.mouseover_class );
-				$( this ).fadeOut( "fast", function( e ) {
-					var id		= this.id;
-					var value	= $( this ).html( );
-
-					var safe_value	= value.replace( /</g, "&lt;" );
-					safe_value		= value.replace( />/g, "&gt;" );
-					safe_value		= value.replace( /"/g, "&qout;" );
- 
-					var orig_option_value = false;
-
-					var form = _template( opt.start_form, {
-						id				: id,
-						editor_class	: opt.editor_class
-					} );
-
-					if( opt.form_type == 'text' ) {
-						form += _template( opt.text_form, {
-							id				: id,
-							editfield_class	: opt.editfield_class,
-							value			: value
-						} );
-					} // text form
-					else if( opt.form_type == 'textarea' ) {
-						var length = value.length;
-						var rows = ( length / opt.cols ) + 2;
-
-						for( var i = 0; i < length; i++ ) {
-							if( value.charAt( i ) == "\n" ) {
-								rows++;
-							}
-						}
-
-						if( rows > opt.max_rows ) {
-							rows = opt.max_rows;
-						}
-						if( opt.rows != false ) {
-							rows = opt.rows;
-						}
-						rows = parseInt( rows );
-
-						form += _template( opt.textarea_form, {
-							id				: id,
-							cols			: opt.cols,
-							rows			: rows,
-							editfield_class	: opt.editfield_class,
-							value			: value
-						} );
-					} // textarea form
-					else if( opt.form_type == 'select' ) {
-						form += _template( opt.start_select_form, {
-							id				: id,
-							editfield_class	: opt.editfield_class
-						} );
-
-						$.each( opt.select_options, function( k, v ) {
-							var selected = '';
-							if( v == value ) {
-								selected = 'selected="selected"';
-							}
-
-							if( value == v ) {
-								orig_option_value = k;
-							}
-
-							form += _template( opt.select_option_form, {
-								id			: id,
-								option_value: k,
-								option_text	: v,
-								selected	: selected
-							} );
-						} );
-
-						form += _template( opt.stop_select_form, { } );
-					} // select form
-
-					form += _template( opt.form_buttons, {
-						id					: id,
-						savebutton_class	: opt.savebutton_class,
-						savebutton_text		: opt.savebutton_text,
-						cancelbutton_class	: opt.cancelbutton_class,
-						cancelbutton_text	: opt.cancelbutton_text
-					} );
-
-					form += _template( opt.stop_form, { } );
-
-					$( this ).after( form );
-					$( "#editor-" + id ).fadeIn( "fast" );
-
-					if( opt.focus_edit ) {
-						$( "#edit-" + id ).focus( );
-					}
-
-					if( opt.select_text ) {
-						$( "#edit-" + id ).select( );
-					}
-
-					$( "#cancel-" + id ).bind( "click", function( e ) {
-						_cancelEdit( self );
-					} );
-
-					$( "#edit-" + id ).keydown( function( e ) {
-						// cancel
-						if( e.which == 27 ) {
-							_cancelEdit( self );
-						}
-
-						// save
-						if( opt.form_type != "textarea" && e.which == 13 ) {
-							_saveEdit( self, orig_option_value );
-						}
-					} );
-
-					$( "#save-" + id ).bind( "click", function( e ) {
-						return _saveEdit( self, orig_option_value );
-					} ); // save click
-
-				} ); // this fadeOut
-			} ); // this click
-
-		} ); // this each
+				_editMode( this );
+			} );
+		} ); // this.each
 
 		// Private functions
+		var _editMode = function( self ) {
+			$( self ).unbind( opt.edit_event );
+
+			$( self ).removeClass( opt.mouseover_class );
+			$( self ).fadeOut( "fast", function( e ) {
+				var id		= self.id;
+				var value	= $( self ).html( );
+
+				var safe_value	= value.replace( /</g, "&lt;" );
+				safe_value		= value.replace( />/g, "&gt;" );
+				safe_value		= value.replace( /"/g, "&qout;" );
+
+				var orig_option_value = false;
+
+				var form = _template( opt.start_form, {
+					id				: self.id,
+					editor_class	: opt.editor_class
+				} );
+
+				if( opt.form_type == 'text' ) {
+					form += _template( opt.text_form, {
+						id				: self.id,
+						editfield_class	: opt.editfield_class,
+						value			: value
+					} );
+				} // text form
+				else if( opt.form_type == 'textarea' ) {
+					var length = value.length;
+					var rows = ( length / opt.cols ) + 2;
+
+					for( var i = 0; i < length; i++ ) {
+						if( value.charAt( i ) == "\n" ) {
+							rows++;
+						}
+					}
+
+					if( rows > opt.max_rows ) {
+						rows = opt.max_rows;
+					}
+					if( opt.rows != false ) {
+						rows = opt.rows;
+					}
+					rows = parseInt( rows );
+
+					form += _template( opt.textarea_form, {
+						id				: self.id,
+						cols			: opt.cols,
+						rows			: rows,
+						editfield_class	: opt.editfield_class,
+						value			: value
+					} );
+				} // textarea form
+				else if( opt.form_type == 'select' ) {
+					form += _template( opt.start_select_form, {
+						id				: self.id,
+						editfield_class	: opt.editfield_class
+					} );
+
+					$.each( opt.select_options, function( k, v ) {
+						var selected = '';
+						if( v == value ) {
+							selected = 'selected="selected"';
+						}
+
+						if( value == v ) {
+							orig_option_value = k;
+						}
+
+						form += _template( opt.select_option_form, {
+							id			: self.id,
+							option_value: k,
+							option_text	: v,
+							selected	: selected
+						} );
+					} );
+
+					form += _template( opt.stop_select_form, { } );
+				} // select form
+
+				form += _template( opt.form_buttons, {
+					id					: self.id,
+					savebutton_class	: opt.savebutton_class,
+					savebutton_text		: opt.savebutton_text,
+					cancelbutton_class	: opt.cancelbutton_class,
+					cancelbutton_text	: opt.cancelbutton_text
+				} );
+
+				form += _template( opt.stop_form, { } );
+
+				$( self ).after( form );
+				$( "#editor-" + self.id ).fadeIn( "fast" );
+
+				if( opt.focus_edit ) {
+					$( "#edit-" + self.id ).focus( );
+				}
+
+				if( opt.select_text ) {
+					$( "#edit-" + self.id ).select( );
+				}
+
+				$( "#cancel-" + self.id ).bind( "click", function( e ) {
+					_cancelEdit( self );
+				} );
+
+				$( "#edit-" + self.id ).keydown( function( e ) {
+					// cancel
+					if( e.which == 27 ) {
+						_cancelEdit( self );
+					}
+
+					// save
+					if( opt.form_type != "textarea" && e.which == 13 ) {
+						_saveEdit( self, orig_option_value );
+					}
+				} );
+
+				$( "#save-" + self.id ).bind( "click", function( e ) {
+					return _saveEdit( self, orig_option_value );
+				} ); // save click
+			} ); // this fadeOut
+		} // function _editMode
+
 		var _template = function( template, values ) {
 			var replace = function( str, match ) {
 				return typeof values[match] === "string" || typeof values[match] === 'number' ? values[match] : str;
@@ -228,6 +232,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		var _cancelEdit = function( self ) {
 			$( "#editor-" + self.id ).fadeOut( "fast" );
 			$( "#editor-" + self.id ).remove( );
+
+			$( self ).bind( opt.edit_event, function( e ) {
+				_editMode( self );
+			} );
+
 			$( self ).removeClass( opt.mouseover_class );
 			$( self ).fadeIn( "fast" );
 		};
@@ -239,6 +248,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			if( orig_value == new_value ) {
 				$( "#editor-" + self.id ).fadeOut( "fast" );
 				$( "#editor-" + self.id ).remove( );
+
+				$( self ).bind( opt.edit_event, function( e ) {
+					_editMode( self );
+				} );
+
 				$( self ).removeClass( opt.mouseover_class );
 				$( self ).fadeIn( "fast" );
 
@@ -287,6 +301,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 					$( "#saving-" + self.id ).fadeOut( "fast" );
 					$( "#saving-" + self.id ).remove( );
+
+					$( self ).bind( opt.edit_event, function( e ) {
+						_editMode( self );
+					} );
+
 					$( self ).addClass( opt.mouseover_class );
 					$( self ).fadeIn( "fast" );
 
