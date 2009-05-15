@@ -64,7 +64,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 			text_form			: '<input type="text" id="edit-#{id}" class="#{editfield_class}" value="#{value}" /> <br />',
 			textarea_form		: '<textarea cols="#{cols}" rows="#{rows}" id="edit-#{id}" class="#{editfield_class}">#{value}</textarea> <br />',
-			start_select_form	: '<select id="edit-#{id}" class="#{editfield_clas}">',
+			start_select_form	: '<select id="edit-#{id}" class="#{editfield_class}">',
 			select_option_form	: '<option id="edit-option-#{id}-#{option_value}" value="#{option_value}" #{selected}>#{option_text}</option>',
 			stop_select_form	: '</select>',
 
