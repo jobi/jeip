@@ -28,6 +28,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		// Defaults
 		var opt = {
 			save_url			: save_url,
+			load_url			: null,
 
 			save_on_enter		: true,
 			cancel_on_esc		: true,
@@ -55,6 +56,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 			saving_text			: "Saving ...",
 			saving_class		: "jeip-saving",
+
+			loading				: '<span id="loading-#{id}" class="#{loading_class}" style="display: none;">#{loading_text}</span>',
+
+			loading_text			: "Loading ...",
+			loading_class		: "jeip-loading",
 
 			saving				: '<span id="saving-#{id}" class="#{saving_class}" style="display: none;">#{saving_text}</span>',
 
@@ -100,9 +106,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			$( self ).unbind( opt.edit_event );
 
 			$( self ).removeClass( opt.mouseover_class );
+
+			var value =  $( self ).html( );
+
+			if ( opt.load_url != null ) {
+				_loadContent( self, value );
+			} else {
+				_showEditMode( self, value );
+			}
+		} // function _editMode
+
+		var _showEditMode = function( self, value ) {
 			$( self ).fadeOut( "fast", function( e ) {
 				var id		= self.id;
-				var value	= $( self ).html( );
 
 				var safe_value	= value.replace( /</g, "&lt;" );
 				safe_value		= value.replace( />/g, "&gt;" );
@@ -216,7 +232,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 					return _saveEdit( self, orig_option_value );
 				} ); // save click
 			} ); // this fadeOut
-		} // function _editMode
+		} // function _showEditMode
 
 		var _template = function( template, values ) {
 			var replace = function( str, match ) {
@@ -240,6 +256,58 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			$( self ).removeClass( opt.mouseover_class );
 			$( self ).fadeIn( "fast" );
 		};
+
+		var _loadContent = function( self, orig_value ) {
+			$( self ).after( _template( opt.loading, {
+				id			: self.id,
+				loading_class: opt.loading_class,
+				loadng_text	: opt.loading_text
+			} ) );
+			$( self ).fadeOut( "fast", function( ) {
+				$( "#loading-" + self.id).fadeIn( "fast" );
+			} );
+
+			var ajax_data = {
+				url			: location.href,
+				id			: self.id,
+				form_type	: opt.form_type,
+				orig_value	: orig_value,
+				data		: opt.data
+			}
+
+			if( opt.form_type == 'select' ) {
+				ajax_data.orig_option_value = orig_option_value;
+				ajax_data.orig_option_text = orig_value;
+			}
+
+			$.ajax( {
+				url		: opt.load_url,
+				type	: "GET",
+				dataType: "json",
+				data	: ajax_data,
+				success	: function( data ) {
+					$( "#loading-" + self.id ).fadeOut( "fast" );
+					$( "#loading-" + self.id ).remove( );
+
+					if( data.is_error == true ) {
+						opt.on_error( data.error_text );
+
+						$( self ).bind( opt.edit_event, function( e ) {
+							_editMode( self );
+						} );
+
+						$( self ).addClass( opt.mouseover_class );
+						$( self ).fadeIn( "fast" );
+
+						$( self ).removeClass( opt.mouseover_class );
+					}
+					else {
+						var value = data.value;
+						_showEditMode( self, value );
+					}
+				} // success
+			} ); // ajax
+		}
 		
 		var _saveEdit = function( self, orig_option_value ) {
 			var orig_value = $( self ).html( );
